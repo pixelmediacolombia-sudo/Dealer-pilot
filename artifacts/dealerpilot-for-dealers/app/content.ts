@@ -4,9 +4,10 @@
  * El inglés NO es traducción literal del español: los dos se escribieron
  * aparte con el mismo contenido. Si cambia uno, revise el otro a mano.
  *
- * Regla de lenguaje: la publicación es automática. En ningún texto puede
- * aparecer que alguien revise, apruebe o confirme un anuncio. Los verbos
- * de publicación van en pasado y en tercera persona.
+ * Regla de lenguaje: los tres canales publican solos — Marketplace, los
+ * mensajes y la página comercial (esta última en el horario programado).
+ * En ningún texto puede aparecer que alguien revise, apruebe o confirme un
+ * anuncio. Los verbos de publicación van en pasado y en tercera persona.
  */
 
 /** Reemplace estos dos valores por los reales antes de salir a producción. */
@@ -15,6 +16,8 @@ export const CONTACT = {
   phoneHref: "tel:+10000000000",
   email: "contact@1987marketing.com",
 };
+
+export type Lang = "es" | "en";
 
 export type Vehicle = {
   name: string;
@@ -30,6 +33,20 @@ export type Vehicle = {
   pull: Array<"miles" | "price">;
   /** la respuesta; <mark> marca el dato que salió del inventario */
   answer: string;
+};
+
+/** Una de las cosas que ocurren solas, con la extensión y el canal que la hacen. */
+export type DoesRow = {
+  name: string;
+  text: string;
+  meta: readonly (readonly [string, string])[];
+};
+
+/** Una de las secciones del producto, con lo que hay adentro. */
+export type SystemRow = {
+  name: string;
+  promise: string;
+  items: readonly string[];
 };
 
 export const VEHICLES: Record<Lang, Vehicle[]> = {
@@ -119,12 +136,6 @@ export const VEHICLES: Record<Lang, Vehicle[]> = {
   ],
 };
 
-export type Lang = "es" | "en";
-
-/**
- * Tipo compartido por los dos idiomas. Anotarlo (en vez de `as const`) hace
- * que `COPY[lang]` tenga un solo tipo y que `.map()` sobre does/rules compile.
- */
 export type Copy = {
   htmlLang: string;
   skip: string;
@@ -136,6 +147,7 @@ export type Copy = {
   region: string;
   callLabel: string;
   mailLabel: string;
+
   stageTitle: string;
   stageAside: string;
   ticketVehicle: string;
@@ -150,22 +162,32 @@ export type Copy = {
   when3: string;
   stamp: string;
   caption: string;
+
   doesLabel: string;
   doesTitle: string;
-  does: readonly (readonly [string, string])[];
+  does: readonly DoesRow[];
+
+  systemLabel: string;
+  systemTitle: string;
+  systemLead: string;
+  system: readonly SystemRow[];
+
   rulesLabel: string;
   rulesTitle: string;
   rulesLead: string;
   rules: readonly (readonly [string, string])[];
+
   notLabel: string;
   notTitle: string;
   not: readonly string[];
+
   closeTitleA: string;
   closeTitleB: string;
   closeLead: string;
   closeCall: string;
   closeMail: string;
   signature: readonly string[];
+
   footerNote: string;
   footerTag: string;
 };
@@ -203,21 +225,123 @@ export const COPY: Record<Lang, Copy> = {
     caption:
       "Cada carro de su lote recorre esto solo: se publica, contesta a los compradores con sus propios datos y sale del aire cuando se vende.",
 
-    doesLabel: "Lo que hace solo",
-    doesTitle: "Tres cosas, sin que usted abra Facebook",
+    doesLabel: "Lo que pasa solo",
+    doesTitle: "Cuatro cosas, sin que usted abra Facebook",
     does: [
-      [
-        "Publica",
-        "Arma el anuncio con las fotos, el precio y el millaje que ya están en su inventario, y lo sube a Facebook Marketplace. Usted no escribe la descripción ni llena el formulario.",
-      ],
-      [
-        "Contesta",
-        "Responde “¿todavía está disponible?”, el millaje, el precio, la ubicación y el financiamiento con lo que dice su inventario y su ficha de dealer. Contesta en español o en inglés, según le escriban.",
-      ],
-      [
-        "Retira",
-        "Cuando el carro pasa a vendido, el anuncio sale del aire. Usted deja de recibir mensajes por una unidad que ya no tiene en el lote.",
-      ],
+      {
+        name: "Publica",
+        text: "Toma el vehículo de la cola, arma la descripción, la categoría y el precio con las fotos y los datos que ya están en su inventario, abre Marketplace y lo publica. Si Facebook pide verificación o corta la sesión, se detiene y avisa en vez de forzar.",
+        meta: [
+          ["Extensión", "DealerPilot AI Publisher"],
+          ["Canal", "Facebook Marketplace del vendedor"],
+        ],
+      },
+      {
+        name: "Contesta",
+        text: "Reconoce quién escribe, de qué vehículo habla y qué está preguntando, y responde con el millaje, el precio, la ubicación y el financiamiento que dice su inventario. Contesta en español o en inglés, según le escriban, y escala a teléfono cuando el comprador está listo.",
+        meta: [
+          ["Extensión", "DealerPilot Messenger AI"],
+          ["Canal", "Conversaciones de Marketplace"],
+        ],
+      },
+      {
+        name: "Publica en su página",
+        text: "Convierte un vehículo del inventario en publicación de su página comercial, con el texto y hasta diez fotos preparadas, y la sube en el horario que usted dejó programado.",
+        meta: [
+          ["Extensión", "DealerPilot Page Publisher"],
+          ["Canal", "Meta Business Suite"],
+        ],
+      },
+      {
+        name: "Retira",
+        text: "Cuando el carro pasa a vendido en el inventario, el anuncio sale del aire. Usted deja de recibir mensajes por una unidad que ya no tiene en el lote.",
+        meta: [
+          ["Motor", "Cola de publicación"],
+          ["Canal", "Todos"],
+        ],
+      },
+    ],
+
+    systemLabel: "El sistema completo",
+    systemTitle: "Ocho pantallas, una sola operación",
+    systemLead:
+      "No necesita aprender palabras técnicas. Cada pantalla responde una pregunta concreta del día del lote.",
+    system: [
+      {
+        name: "Centro de mando",
+        promise: "Abre el día sabiendo qué necesita atención.",
+        items: [
+          "Prioridades del día",
+          "Alertas y actividad reciente",
+          "Estado de los motores del sistema",
+        ],
+      },
+      {
+        name: "Inventario",
+        promise: "Su feed entra solo y se mantiene al día.",
+        items: [
+          "Importa su feed XML o CSV",
+          "Se sincroniza cada 24 horas",
+          "Salud del feed y estado por unidad",
+          "Varios lotes en la misma cuenta",
+        ],
+      },
+      {
+        name: "Marketplace",
+        promise: "Una cola que trabaja sola, de anuncio armado a anuncio arriba.",
+        items: [
+          "Descripción, categoría y precio",
+          "Sugerencia de enganche",
+          "Lotes programados por día y hora",
+          "Reintenta si Facebook falla",
+          "Control de los anuncios activos",
+        ],
+      },
+      {
+        name: "Estudio de fotos",
+        promise: "Las fotos salen parejas sin que nadie las edite.",
+        items: [
+          "Puntaje de calidad por foto",
+          "Fondo removido y foto de producto",
+          "Portada elegida y galería ordenada",
+        ],
+      },
+      {
+        name: "Ventas y compradores",
+        promise: "Cada mensaje llega con el vehículo y el historial pegados.",
+        items: [
+          "Conversaciones reunidas por comprador",
+          "Intención del mensaje y calificación",
+          "Puntaje de lead y próximo paso",
+        ],
+      },
+      {
+        name: "Dealer DNA",
+        promise: "Todo lo que sale suena como su lote.",
+        items: [
+          "Tono y forma de hablar",
+          "Programas de financiamiento",
+          "Reglas y datos de la tienda",
+        ],
+      },
+      {
+        name: "Inteligencia de mercado",
+        promise: "Qué carro conviene publicar primero, y cuál todavía no.",
+        items: [
+          "Oportunidad de 0 a 100 por vehículo",
+          "Doce señales de demanda",
+          "Bloqueo de anuncios duplicados",
+        ],
+      },
+      {
+        name: "Conexiones y ajustes",
+        promise: "Se da cuenta de que algo está caído antes que usted.",
+        items: [
+          "Estado de la extensión y del feed",
+          "Ubicaciones y lotes del dealer",
+          "Feed de Meta para anuncios de inventario",
+        ],
+      },
     ],
 
     rulesLabel: "Lo que usted pone",
@@ -227,7 +351,7 @@ export const COPY: Record<Lang, Copy> = {
     rules: [
       ["Precio mínimo", "Nunca sale un anuncio por debajo de su piso"],
       ["Tono", "Escribe y contesta como habla su lote"],
-      ["Horario", "A qué horas contesta y a qué horas no"],
+      ["Horario", "A qué horas publica, a qué horas contesta"],
       ["Lo que no se dice", "Temas que quedan fuera de la conversación"],
       ["Ubicaciones", "De cuál de sus lotes sale cada carro"],
       ["Financiamiento", "Qué programas se mencionan y cuáles no"],
@@ -238,7 +362,8 @@ export const COPY: Record<Lang, Copy> = {
     not: [
       "No inventa datos. Si el dato no está en su inventario, no lo dice.",
       "No publica el mismo carro dos veces ni lo pone a competir contra sus propios anuncios.",
-      "No toca su página comercial de Facebook. Ese canal va por separado y no se cruza con el Marketplace del vendedor.",
+      "No borra su inventario cuando el feed llega vacío o roto: se detiene y deja todo como estaba.",
+      "No mezcla los canales. El Marketplace del vendedor y la página comercial van por rutas separadas.",
       "No le pide que abra Facebook para publicar. Ese es el punto.",
     ],
 
@@ -286,21 +411,115 @@ export const COPY: Record<Lang, Copy> = {
     caption:
       "Every car on your lot runs this on its own: it posts, it answers buyers with its own numbers, and it comes down when the car sells.",
 
-    doesLabel: "What it does on its own",
-    doesTitle: "Three things, without you opening Facebook",
+    doesLabel: "What happens on its own",
+    doesTitle: "Four things, without you opening Facebook",
     does: [
-      [
-        "Posts",
-        "Builds the listing from the photos, price, and mileage already in your inventory, and puts it on Facebook Marketplace. You don't write the description or fill in the form.",
-      ],
-      [
-        "Answers",
-        "Handles “is this still available?”, mileage, price, location, and financing using your inventory and your dealer profile. It answers in English or Spanish, whichever the buyer writes in.",
-      ],
-      [
-        "Pulls it down",
-        "The moment the car is marked sold, the listing comes off Marketplace. You stop getting messages about a car that already left the lot.",
-      ],
+      {
+        name: "Posts",
+        text: "Pulls the vehicle off the queue, writes the description, picks the category and the price from the photos and numbers already in your inventory, opens Marketplace, and posts it. If Facebook asks for verification or drops the session, it stops and reports instead of forcing anything.",
+        meta: [
+          ["Extension", "DealerPilot AI Publisher"],
+          ["Channel", "The seller's Facebook Marketplace"],
+        ],
+      },
+      {
+        name: "Answers",
+        text: "Recognizes who is writing, which vehicle they mean, and what they're asking, then replies with the mileage, price, location, and financing your inventory actually holds. It answers in English or Spanish, whichever they write in, and moves to a phone call when the buyer is ready.",
+        meta: [
+          ["Extension", "DealerPilot Messenger AI"],
+          ["Channel", "Marketplace conversations"],
+        ],
+      },
+      {
+        name: "Posts to your page",
+        text: "Turns an inventory vehicle into a business-page post with the caption and up to ten photos prepared, and puts it up on the schedule you set.",
+        meta: [
+          ["Extension", "DealerPilot Page Publisher"],
+          ["Channel", "Meta Business Suite"],
+        ],
+      },
+      {
+        name: "Takes it down",
+        text: "The moment the car is marked sold in your inventory, the listing comes off. You stop getting messages about a car that already left the lot.",
+        meta: [
+          ["Engine", "Publishing queue"],
+          ["Channel", "All"],
+        ],
+      },
+    ],
+
+    systemLabel: "The whole system",
+    systemTitle: "Eight screens, one operation",
+    systemLead:
+      "No technical vocabulary to learn. Each screen answers one concrete question from a day on the lot.",
+    system: [
+      {
+        name: "Command center",
+        promise: "Open the day knowing what needs attention.",
+        items: ["Today's priorities", "Alerts and recent activity", "Status of the system's engines"],
+      },
+      {
+        name: "Inventory",
+        promise: "Your feed comes in on its own and stays current.",
+        items: [
+          "Imports your XML or CSV feed",
+          "Syncs every 24 hours",
+          "Feed health and per-unit status",
+          "Several lots on one account",
+        ],
+      },
+      {
+        name: "Marketplace",
+        promise: "A queue that works on its own, from written listing to live listing.",
+        items: [
+          "Description, category, and price",
+          "Suggested down payment",
+          "Batches scheduled by day and hour",
+          "Retries when Facebook fails",
+          "Control of what's currently live",
+        ],
+      },
+      {
+        name: "Photo studio",
+        promise: "Photos come out even without anyone editing them.",
+        items: [
+          "Quality score per photo",
+          "Background removed, product shot",
+          "Cover chosen, gallery ordered",
+        ],
+      },
+      {
+        name: "Sales and buyers",
+        promise: "Every message arrives with the vehicle and the history attached.",
+        items: [
+          "Conversations grouped by buyer",
+          "Message intent and qualification",
+          "Lead score and next step",
+        ],
+      },
+      {
+        name: "Dealer DNA",
+        promise: "Everything that goes out sounds like your lot.",
+        items: ["Tone and turns of phrase", "Financing programs", "Store rules and details"],
+      },
+      {
+        name: "Market intelligence",
+        promise: "Which car is worth posting first, and which one isn't yet.",
+        items: [
+          "Opportunity 0 to 100 per vehicle",
+          "Twelve demand signals",
+          "Duplicate listings blocked",
+        ],
+      },
+      {
+        name: "Connections and settings",
+        promise: "It notices something is down before you do.",
+        items: [
+          "Extension and feed status",
+          "Dealer lots and locations",
+          "Meta feed for inventory ads",
+        ],
+      },
     ],
 
     rulesLabel: "What you set",
@@ -310,7 +529,7 @@ export const COPY: Record<Lang, Copy> = {
     rules: [
       ["Price floor", "No listing ever goes out below your floor"],
       ["Tone", "It writes and answers the way your lot talks"],
-      ["Hours", "When it answers and when it stays quiet"],
+      ["Hours", "When it posts, when it answers"],
       ["Off limits", "Subjects that stay out of the conversation"],
       ["Locations", "Which of your lots each car comes from"],
       ["Financing", "Which programs get mentioned and which don't"],
@@ -321,7 +540,8 @@ export const COPY: Record<Lang, Copy> = {
     not: [
       "It does not make up numbers. If it isn't in your inventory, it doesn't say it.",
       "It does not post the same car twice or put it up against your own listings.",
-      "It does not touch your Facebook business page. That channel runs separately and never crosses the seller's Marketplace.",
+      "It does not wipe your inventory when a feed comes back empty or broken: it stops and leaves everything as it was.",
+      "It does not mix the channels. The seller's Marketplace and the business page run on separate tracks.",
       "It does not ask you to open Facebook to publish. That's the whole point.",
     ],
 

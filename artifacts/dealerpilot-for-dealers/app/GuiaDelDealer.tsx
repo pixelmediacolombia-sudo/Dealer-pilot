@@ -65,10 +65,43 @@ export default function GuiaDelDealer({ lang }: { lang: Lang }) {
               {t.doesTitle}
             </h2>
           </div>
-          {t.does.map(([title, text]) => (
-            <div className="doesRow" key={title}>
-              <h3>{title}</h3>
-              <p>{text}</p>
+          {t.does.map((row) => (
+            <div className="doesRow" key={row.name}>
+              <h3>{row.name}</h3>
+              <div>
+                <p>{row.text}</p>
+                <dl className="rowMeta">
+                  {row.meta.map(([term, value]) => (
+                    <div key={term}>
+                      <dt>{term}</dt>
+                      <dd>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <section className="block" aria-labelledby="sistema">
+          <div className="blockHead">
+            <p className="label">{t.systemLabel}</p>
+            <h2 className="blockTitle" id="sistema">
+              {t.systemTitle}
+            </h2>
+            <p className="prose">{t.systemLead}</p>
+          </div>
+          {t.system.map((row) => (
+            <div className="doesRow systemRow" key={row.name}>
+              <h3>{row.name}</h3>
+              <div>
+                <p>{row.promise}</p>
+                <ul className="rowItems">
+                  {row.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ))}
         </section>

@@ -445,6 +445,7 @@ img, svg { max-width: 100%; }
   border-top: var(--rule-hair) solid var(--ink);
 }
 .doesRow:last-child { border-bottom: var(--rule-hair) solid var(--ink); }
+.doesRow > div { min-width: 0; }
 .doesRow h3 {
   margin: 0;
   font-family: var(--display);
@@ -455,6 +456,38 @@ img, svg { max-width: 100%; }
   text-transform: uppercase;
 }
 .doesRow p { margin: 0; max-width: var(--measure); }
+
+/* metadatos de una fila: extensión y canal, en tipografía de dato */
+.rowMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 26px;
+  margin: 12px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  max-width: var(--measure);
+}
+.rowMeta div { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.rowMeta dt { font: 800 9px/1.4 var(--text); letter-spacing: .14em; text-transform: uppercase; color: #55524b; }
+.rowMeta dd { margin: 0; font-family: var(--data); font-size: 13px; }
+
+/* las ocho secciones del producto: filas de formulario, no tarjetas */
+.systemRow { grid-template-columns: minmax(0, 230px) minmax(0, 1fr); }
+.rowItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 22px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.rowItems li {
+  font-family: var(--data);
+  font-size: 13px;
+  line-height: 1.5;
+  color: #43413c;
+}
+.rowItems li::before { content: "— "; color: #8c877d; }
 
 .fields { display: grid; gap: 0; }
 .field {
